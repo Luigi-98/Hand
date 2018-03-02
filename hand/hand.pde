@@ -1,11 +1,12 @@
 import java.lang.Math;
 
+PVector y=new PVector(0,-1);
 PVector F,A,B,C,d;
 PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;
 PVector nF,nA,nB,nC;
 
 int n=50;
-PVector P[]=new PVector[n];
+PVector P[]=new PVector[n],P1[]=new PVector[n];
 
 void setup()
 {
@@ -19,6 +20,8 @@ void setup()
   B=new PVector(0,250);
   C=new PVector(0,250);
   d=new PVector(1,0);
+  
+  nFA1=nFA2=nAB1=nAB2=nBC1=nBC2=y;
 }
 
 void draw()
@@ -51,13 +54,17 @@ void addVertices()
   float thickness=70;
   for (int i=0; i<n; i++)
   {
-    P[i]=PVector.mult(d,F.x+((A.y+B.y+C.y)*7/6)*i/n);
-    P[i].add(new PVector(0,thickness));
+    P[i]=PVector.mult(d,((A.y+B.y+C.y)*7/6)*i/n);
+    P[i].add(PVector.mult(y,thickness));
+    P[i].add(F);
     if (i>0) line(P[i-1].x,P[i-1].y,P[i].x,P[i].y);
   }
 }
 
 void flex()
 {
-  
+  for (int i=0; i<n; i++)
+  {
+    
+  }
 }
