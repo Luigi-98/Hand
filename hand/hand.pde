@@ -1,6 +1,8 @@
 import java.lang.Math;
 
 PVector F,A,B,C,d;
+PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;
+PVector nF,nA,nB,nC;
 
 int n=50;
 PVector P[]=new PVector[n];
@@ -53,4 +55,9 @@ void addVertices()
     P[i].add(new PVector(0,thickness));
     if (i>0) line(P[i-1].x,P[i-1].y,P[i].x,P[i].y);
   }
+}
+
+void flex()
+{
+  
 }
