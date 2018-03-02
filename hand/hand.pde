@@ -1,3 +1,5 @@
+PVector F,A,B,C,d;
+
 void setup()
 {
   size(1024,768);
@@ -5,7 +7,6 @@ void setup()
   stroke(255,255,0);
   fill(255);
   
-  PVector F,A,B,C,d;
   F=new PVector(0,0);
   A=new PVector(0,250);
   B=new PVector(0,250);
@@ -15,4 +16,17 @@ void setup()
 
 void draw()
 {
+}
+
+void drawSkeleton()
+{
+  PVector FA=PVector.mult(d,A.y);
+  FA.rotate(A.x);
+  PVector AB=PVector.mult(FA.copy().normalize(),B.y); // Aggiungere F a tutte cose
+  AB.rotate(B.x);
+  PVector BC=PVector.mult(AB.copy().normalize(),C.y);
+  FA.add(F);
+  AB.add(FA);
+  BC.add(AB);
+  
 }
