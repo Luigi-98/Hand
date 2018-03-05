@@ -4,6 +4,7 @@ PVector y=new PVector(0,-1);
 PVector F,A,B,C,d;
 PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;
 PVector nF,nA,nB,nC;
+float thickness=70;
 
 int n=50;
 PVector P[]=new PVector[n],P1[]=new PVector[n];
@@ -31,6 +32,8 @@ void draw()
   C.x+=(float)java.lang.Math.PI/800;*/
   drawSkeleton();
   addVertices();
+  flex();
+  drawMesh();
 }
 
 void drawSkeleton()
@@ -49,12 +52,19 @@ void drawSkeleton()
   line(AB.x,AB.y,BC.x,BC.y);
 }
 
-void addVertices()
+void drawMesh()
 {
-  float thickness=70;
   for (int i=0; i<n; i++)
   {
-    P[i]=PVector.mult(d,((A.y+B.y+C.y)*7/6)*i/n);
+    point(P1[i].x,P1[i].y);
+  }
+}
+
+void addVertices()
+{
+  for (int i=0; i<n; i++)
+  {
+    P[i]=PVector.mult(d,(A.y+B.y+C.y)*i/n); // stiamo accorciando la mesh per farla finire con lo scheletro in modo che $\exists R\in[0,1]:$ carino.
     P[i].add(PVector.mult(y,thickness));
     P[i].add(F);
     if (i>0) line(P[i-1].x,P[i-1].y,P[i].x,P[i].y);
@@ -65,6 +75,25 @@ void flex()
 {
   for (int i=0; i<n; i++)
   {
-    
+    float R=PVector.dot(PVector.sub(A,F),PVector.sub(P[i],A))/PVector.sub(A,F).magSq(); //calcolato su FA
+    if (R>=0&&R<=1)
+      P1[i]=PVector.add(PVector.add(F,PVector.mult(PVector.sub(A,F).normalize(),R)),PVector.mult(normal(R,nF,nA),thickness));
+    else if ((R=PVector.dot(PVector.sub(B,A),PVector.sub(P[i],B))/PVector.sub(B,A).magSq())>=0&&R<=1) //calcolato su AB
+      P1[i]=PVector.add(PVector.add(A,PVector.mult(PVector.sub(B,A).normalize(),R)),PVector.mult(normal(R,nA,nB),thickness));
+    else if ((R=PVector.dot(PVector.sub(C,B),PVector.sub(P[i],C))/PVector.sub(C,B).magSq())>=0&&R<=1) //calcolato su BC
+      P1[i]=PVector.add(PVector.add(B,PVector.mult(PVector.sub(C,B).normalize(),R)),PVector.mult(normal(R,nB,nC),thickness));
+    else
+      println("MA COSA HAI SCRITTO? C'È UN PEZZO DI MESH FUORI DALLO SCHELETRO!");
   }
+}
+
+PVector normal(float R, PVector n1, PVector n2)
+{
+  float pD=0.2, pP=0.8;
+  if (R<=pD)
+    return n1;
+  else if (R>=pD)
+    return n2;
+  else
+    return PVector.add(n1,PVector.mult(PVector.sub(n2,n1),(R-pD)/(pP-pD)));
 }
