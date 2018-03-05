@@ -2,6 +2,7 @@ import java.lang.Math;
 
 PVector y=new PVector(0,-1);
 PVector F,A,B,C,d;
+PVector F1,A1,B1,C1;
 PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;
 PVector nF,nA,nB,nC;
 float thickness=70;
@@ -32,6 +33,7 @@ void draw()
   C.x+=(float)java.lang.Math.PI/800;*/
   drawSkeleton();
   addVertices();
+  computeRealVertices();
   flex();
   drawMesh();
 }
@@ -50,6 +52,20 @@ void drawSkeleton()
   line(F.x,F.y,FA.x,FA.y);
   line(FA.x,FA.y,AB.x,AB.y);
   line(AB.x,AB.y,BC.x,BC.y);
+}
+
+void computeRealVertices()
+{
+  F1=F;
+  A1=PVector.mult(d,A.y);
+  A1.rotate(A.x);
+  B1=PVector.mult(A1.copy().normalize(),B.y); // Aggiungere F a tutte cose
+  B1.rotate(B.x);
+  C1=PVector.mult(B1.copy().normalize(),C.y);
+  C1.rotate(C.x);
+  A1.add(F);
+  B1.add(A1);
+  C1.add(B1);
 }
 
 void drawMesh()
@@ -75,13 +91,17 @@ void flex()
 {
   for (int i=0; i<n; i++)
   {
-    float R=PVector.dot(PVector.sub(A,F),PVector.sub(P[i],A))/PVector.sub(A,F).magSq(); //calcolato su FA
+    float R=PVector.dot(PVector.sub(A1,F1),PVector.sub(P[i],A1))/PVector.sub(A1,F1).magSq(); //calcolato su F1A1
+    
+    /**
+      NOTA1 B1ENE: VERIF1IC1A1RE C1HE |X-0.5|<=0.5 È EQUIVA1LENTE A1 VERIF1IC1A1RE C1HE X\IN[0,1]
+    **/
     if (R>=0&&R<=1)
-      P1[i]=PVector.add(PVector.add(F,PVector.mult(PVector.sub(A,F).normalize(),R)),PVector.mult(normal(R,nF,nA),thickness));
-    else if ((R=PVector.dot(PVector.sub(B,A),PVector.sub(P[i],B))/PVector.sub(B,A).magSq())>=0&&R<=1) //calcolato su AB
-      P1[i]=PVector.add(PVector.add(A,PVector.mult(PVector.sub(B,A).normalize(),R)),PVector.mult(normal(R,nA,nB),thickness));
-    else if ((R=PVector.dot(PVector.sub(C,B),PVector.sub(P[i],C))/PVector.sub(C,B).magSq())>=0&&R<=1) //calcolato su BC
-      P1[i]=PVector.add(PVector.add(B,PVector.mult(PVector.sub(C,B).normalize(),R)),PVector.mult(normal(R,nB,nC),thickness));
+      P1[i]=PVector.add(PVector.add(F1,PVector.mult(PVector.sub(A1,F1).normalize(),R)),PVector.mult(normal(R,nF,nA),thickness));
+    else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(B1,A1),PVector.sub(P[i],B1))/PVector.sub(B1,A1).magSq())-0.5)<=0.5) //calcolato su A1B1
+      P1[i]=PVector.add(PVector.add(A1,PVector.mult(PVector.sub(B1,A1).normalize(),R)),PVector.mult(normal(R,nA,nB),thickness));
+    else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(C1,B1),PVector.sub(P[i],C1))/PVector.sub(C1,B1).magSq())-0.5)<=0.5) //calcolato su B1C1
+      P1[i]=PVector.add(PVector.add(B1,PVector.mult(PVector.sub(C1,B1).normalize(),R)),PVector.mult(normal(R,nB,nC),thickness));
     else
       println("MA COSA HAI SCRITTO? C'È UN PEZZO DI MESH FUORI DALLO SCHELETRO!");
   }
