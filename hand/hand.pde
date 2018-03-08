@@ -26,13 +26,13 @@ void setup()
   
   F0=F.copy();
   A0=PVector.mult(d,A.y);
-  A0.rotate(A.x);
+  A0.rotate(A.x*0);
   A0.add(F0);
-  B0=PVector.mult(F0.copy().normalize(),B.y);
-  B0.rotate(B.x);
+  B0=PVector.mult(PVector.sub(A0,F0).normalize(),B.y);
+  B0.rotate(B.x*0);
   B0.add(A0);
-  C0=PVector.mult(A0.copy().normalize(),C.y);
-  C0.rotate(C.x);
+  C0=PVector.mult(PVector.sub(B0,A0).normalize(),C.y);
+  C0.rotate(C.x*0);
   C0.add(B0);
   
   nFA1=nFA2=nAB1=nAB2=nBC1=nBC2=y;
@@ -41,13 +41,13 @@ void setup()
 void draw()
 {
   background(0,255,255);
-  A.x+=(float)java.lang.Math.PI/200;
-  C.x+=(float)java.lang.Math.PI/800;
+  //A.x+=(float)java.lang.Math.PI/200;
+  //C.x+=(float)java.lang.Math.PI/800;
   drawSkeleton();
   addVertices();
   computeRealVertices();
   flex();
-  //drawMesh();
+  drawMesh();
 }
 
 void drawSkeleton()
@@ -118,7 +118,7 @@ void flex()
     /**
       NOTA1 B1ENE: VERIF1IC1A1RE C1HE |X-0.5|<=0.5 È EQUIVA1LENTE A1 VERIF1IC1A1RE C1HE X\IN[0,1]
     **/
-    println(R,PVector.dot(PVector.sub(B0,A0),PVector.sub(P[i],A0))/PVector.sub(B0,A0).magSq(),PVector.dot(PVector.sub(C0,B0),PVector.sub(P[i],B0))/PVector.sub(C0,B0).magSq());
+    
     if (R>=0&&R<=1){
       P1[i]=PVector.add(PVector.add(F1,PVector.mult(PVector.sub(A1,F1).normalize(),R)),PVector.mult(normal(R,nF,nA),thickness));}
     else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(B0,A0),PVector.sub(P[i],A0))/PVector.sub(B0,A0).magSq())-0.5)<=0.5) //calcolato su A1B1
@@ -126,8 +126,7 @@ void flex()
     else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(C0,B0),PVector.sub(P[i],B0))/PVector.sub(C0,B0).magSq())-0.5)<=0.5) //calcolato su B1C1
       P1[i]=PVector.add(PVector.add(B1,PVector.mult(PVector.sub(C1,B1).normalize(),R)),PVector.mult(normal(R,nB,nC),thickness));
     else
-      {println("MA COSA HAI SCRITTO? C'È UN PEZZO DI MESH FUORI DALLO SCHELETRO!");
-      break;}
+      {println("MA COSA HAI SCRITTO? C'È UN PEZZO DI MESH FUORI DALLO SCHELETRO!");}
   }
 }
 
@@ -141,3 +140,7 @@ PVector normal(float R, PVector n1, PVector n2)
   else
     return PVector.add(n1,PVector.mult(PVector.sub(n2,n1),(R-pD)/(pP-pD)));
 }
+
+
+
+// PROBLEMA! PER QUALCHE MOTIVO I PUNTI VENGONO MESSI TUTTI IN CIRCA 3 PUNTI
