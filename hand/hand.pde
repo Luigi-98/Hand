@@ -1,15 +1,16 @@
 import java.lang.Math;
 
 PVector y=new PVector(0,-1);
-PVector F,A,B,C,d;
-PVector F0,A0,B0,C0;
-PVector F1,A1,B1,C1;
-PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;
-PVector nF,nA,nB,nC;
-float thickness=70;
+PVector F,A,B,C;                        // posizioni finali (polari relative) (tranne F che è cartesiano)
+PVector d;
+PVector F0,A0,B0,C0;                    // posizioni iniziali (cartesiane)
+PVector F1,A1,B1,C1;                    // posizioni finali (cartesiane)
+PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;  // normali iniziali (cartesiane)
+PVector nF,nA,nB,nC;                    // normali finali mediate (cartesiane)
 
-int n=50;
-PVector P[]=new PVector[n],P1[]=new PVector[n];
+float thickness=70;
+int n=1000;
+PVector P[]=new PVector[n], P1[]=new PVector[n];
 
 void setup()
 {
@@ -41,8 +42,9 @@ void setup()
 void draw()
 {
   background(0,255,255);
-  //A.x+=(float)java.lang.Math.PI/200;
-  //C.x+=(float)java.lang.Math.PI/800;
+  A.x+=(float)java.lang.Math.PI/10000;
+  B.x+=(float)java.lang.Math.PI/800;
+  C.x+=(float)java.lang.Math.PI/400;
   drawSkeleton();
   addVertices();
   computeRealVertices();
@@ -68,7 +70,7 @@ void drawSkeleton()
 
 void computeRealVertices()
 {
-  PVector nF0=nFA1.copy(),nA0=nFA1.copy(),nA1=nAB1.copy(),nB0=nAB2.copy(),nB1=nBC1.copy(),nC0=nBC2.copy();
+  PVector nF0=nFA1.copy(),nA0=nFA2.copy(),nA1=nAB1.copy(),nB0=nAB2.copy(),nB1=nBC1.copy(),nC0=nBC2.copy();
   F1=F;
   A1=PVector.mult(d,A.y);
   A1.rotate(A.x);
@@ -79,16 +81,18 @@ void computeRealVertices()
   nC0.rotate(A.x);
   B1=PVector.mult(A1.copy().normalize(),B.y); // Aggiungere F a tutte cose
   B1.rotate(B.x);
+  nA1.rotate(B.x);
   nB0.rotate(B.x);
   nB1.rotate(B.x);
   nC0.rotate(B.x);
   C1=PVector.mult(B1.copy().normalize(),C.y);
   C1.rotate(C.x);
+  nB1.rotate(C.x);
   nC0.rotate(C.x);
   A1.add(F);
   B1.add(A1);
   C1.add(B1);
-  nF=nF0; nA=PVector.mult(PVector.add(nA0,nA1),0.5); nB=PVector.mult(PVector.add(nB0,nB1),0.5); nC=nC0;
+  nF=nF0; nA=PVector.add(nA0,nA1).normalize(); nB=PVector.add(nB0,nB1).normalize(); nC=nC0;
 }
 
 void drawMesh()
@@ -120,11 +124,11 @@ void flex()
     **/
     
     if (R>=0&&R<=1){
-      P1[i]=PVector.add(PVector.add(F1,PVector.mult(PVector.sub(A1,F1).normalize(),R)),PVector.mult(normal(R,nF,nA),thickness));}
-    else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(B0,A0),PVector.sub(P[i],A0))/PVector.sub(B0,A0).magSq())-0.5)<=0.5) //calcolato su A1B1
-      P1[i]=PVector.add(PVector.add(A1,PVector.mult(PVector.sub(B1,A1).normalize(),R)),PVector.mult(normal(R,nA,nB),thickness));
-    else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(C0,B0),PVector.sub(P[i],B0))/PVector.sub(C0,B0).magSq())-0.5)<=0.5) //calcolato su B1C1
-      P1[i]=PVector.add(PVector.add(B1,PVector.mult(PVector.sub(C1,B1).normalize(),R)),PVector.mult(normal(R,nB,nC),thickness));
+      P1[i]=PVector.add(PVector.add(F1,PVector.mult(PVector.sub(A1,F1),R)),PVector.mult(normal(R,nF,nA),thickness));println(PVector.add(F1,PVector.mult(PVector.sub(A1,F1),R)));}
+    else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(B0,A0),PVector.sub(P[i],A0))/PVector.sub(B0,A0).magSq())-0.5)<=0.5) {//calcolato su A1B1
+      P1[i]=PVector.add(PVector.add(A1,PVector.mult(PVector.sub(B1,A1),R)),PVector.mult(normal(R,nA,nB),thickness));println(PVector.add(A1,PVector.mult(PVector.sub(B1,A1),R)));}
+    else if (java.lang.Math.abs((R=PVector.dot(PVector.sub(C0,B0),PVector.sub(P[i],B0))/PVector.sub(C0,B0).magSq())-0.5)<=0.5) {//calcolato su B1C1
+      P1[i]=PVector.add(PVector.add(B1,PVector.mult(PVector.sub(C1,B1),R)),PVector.mult(normal(R,nB,nC),thickness));println(PVector.add(B1,PVector.mult(PVector.sub(C1,B1),R)));}
     else
       {println("MA COSA HAI SCRITTO? C'È UN PEZZO DI MESH FUORI DALLO SCHELETRO!");}
   }
@@ -132,10 +136,10 @@ void flex()
 
 PVector normal(float R, PVector n1, PVector n2)
 {
-  float pD=0.2, pP=0.8;
+  float pD=0.1, pP=0.9;
   if (R<=pD)
     return n1;
-  else if (R>=pD)
+  else if (R>=pP)
     return n2;
   else
     return PVector.add(n1,PVector.mult(PVector.sub(n2,n1),(R-pD)/(pP-pD)));
