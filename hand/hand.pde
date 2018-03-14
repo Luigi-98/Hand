@@ -8,8 +8,8 @@ PVector F1,A1,B1,C1;                    // posizioni finali (cartesiane)
 PVector nFA1,nFA2,nAB1,nAB2,nBC1,nBC2;  // normali iniziali (cartesiane)
 PVector nF,nA,nB,nC;                    // normali finali mediate (cartesiane)
 
-float thickness=70;
-int n=200;
+float thickness=85;
+int n=50;
 float thicknesses[]=new float[2*n];
 PVector P[]=new PVector[2*n], P1[]=new PVector[2*n];
 
@@ -52,9 +52,9 @@ void draw()
   
   // SIN^2 è periodico di periodo 2pi ed è compreso tra 0 e 1.
   
-  A.x=(float)(java.lang.Math.PI/4*pow((float)java.lang.Math.sin((millis()-time)*java.lang.Math.PI/20000),2));
-  B.x=(float)(java.lang.Math.PI/2*pow((float)java.lang.Math.sin((millis()-time)*java.lang.Math.PI/4000),2));
-  C.x=(float)(java.lang.Math.PI/2*pow((float)java.lang.Math.sin((millis()-time)*java.lang.Math.PI/4800),2));
+  A.x=(float)(java.lang.Math.PI/4*pow((float)java.lang.Math.sin((millis()-time)*java.lang.Math.PI/5000),2));
+  B.x=(float)(java.lang.Math.PI/1.8*pow((float)java.lang.Math.sin((millis()-time)*java.lang.Math.PI/5000),2));
+  C.x=(float)(java.lang.Math.PI/2*pow((float)java.lang.Math.sin((millis()-time)*java.lang.Math.PI/5000),2));
   addVertices();
   computeRealVertices();
   flex();
